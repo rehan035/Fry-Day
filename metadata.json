@@ -1,0 +1,6 @@
+{
+  "name": "Frydays — Freshly Fried & WhatsApp Order",
+  "description": "Hand-pressed burgers, double-fried wings, loaded fries in Lahore with instant WhatsApp ordering and FryPoints rewards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
