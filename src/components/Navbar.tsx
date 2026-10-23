@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, MessageCircle, Menu, X, Clock, Sun, Moon, Flame } from 'lucide-react';
+import { ShoppingBag, Menu, X, Sun, Moon, MessageCircle } from 'lucide-react';
 import { CartItem, WhatsAppConfig } from '../types';
 import { FRY_DAYS_LOGO } from '../data/menu';
 
@@ -26,176 +26,152 @@ export const Navbar: React.FC<NavbarProps> = ({
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#f6f1e9]/95 dark:bg-[#12100e]/95 backdrop-blur-md border-b border-[#141210]/10 dark:border-white/10 transition-colors duration-200">
-      {/* Top Banner for Live Kitchen & WhatsApp Hotline */}
-      <div className="bg-[#141210] dark:bg-[#0a0908] text-[#f6f1e9] text-xs py-1.5 px-3 sm:px-4 font-medium border-b border-white/5">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 sm:gap-2 truncate">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#25D366] animate-pulse shrink-0"></span>
-            <span className="truncate text-[11px] sm:text-xs">
-              Kitchen Live in Lahore • WhatsApp Orders: <strong className="text-[#25D366]">{whatsAppConfig.displayPhone}</strong>
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs shrink-0">
-            <span className="hidden md:flex items-center gap-1 text-white/70">
-              <Clock className="w-3.5 h-3.5 text-[#f2b134]" /> 11 AM – 2 AM
-            </span>
-
-            {/* Direct WhatsApp Call/Chat link */}
-            <a
-              href={`https://wa.me/${whatsAppConfig.phoneNumber}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-[#25D366] hover:underline font-bold text-[11px] sm:text-xs"
-            >
-              <MessageCircle className="w-3.5 h-3.5 fill-current" />
-              <span>Chat Live</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Navbar */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 h-16 sm:h-18 flex items-center justify-between gap-3">
-        {/* Brand with Official Logo */}
-        <a href="#" className="flex items-center gap-2 group py-1">
+    <header className="sticky top-0 z-40 bg-[#F7F5F0]/95 dark:bg-[#11100E]/95 backdrop-blur-md border-b border-[#161412]/10 dark:border-white/10 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-8">
+        {/* Zone 1: Single-line Brand Lockup */}
+        <a
+          href="#"
+          className="flex items-center gap-3 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#C8392B]"
+        >
           <img
             src={FRY_DAYS_LOGO}
-            alt="FRY DAYS — Fries, Burgers, Wraps"
-            className="h-10 sm:h-12 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+            alt="Fry Days"
+            referrerPolicy="no-referrer"
+            className="h-10 sm:h-12 w-auto object-contain"
           />
+          <span className="hidden lg:inline font-display font-extrabold text-lg tracking-tight text-[#161412] dark:text-[#F4F1EA]">
+            FRY DAYS
+          </span>
         </a>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-[#4a443f] dark:text-[#b8b0a5]">
-          <a href="#menu" className="hover:text-[#141210] dark:hover:text-white transition-colors relative py-1">
-            Menu
-          </a>
-          <a href="#deals" className="hover:text-[#141210] dark:hover:text-white flex items-center gap-1 transition-colors relative py-1 text-[#c8392b] dark:text-[#f2b134]">
-            <Flame className="w-4 h-4 fill-current" /> Combos
-          </a>
-          <a href="#rewards" className="hover:text-[#141210] dark:hover:text-white transition-colors relative py-1">
-            FryPoints
-          </a>
-          <a href="#story" className="hover:text-[#141210] dark:hover:text-white transition-colors relative py-1">
-            Our Story
-          </a>
-          <a href="#visit" className="hover:text-[#141210] dark:hover:text-white transition-colors relative py-1">
-            Visit & Hours
-          </a>
-        </nav>
-
-        {/* Action Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={onToggleDarkMode}
-            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[#141210] dark:text-[#f6f1e9] bg-[#141210]/5 dark:bg-white/10 hover:bg-[#141210]/10 dark:hover:bg-white/15 transition-all"
-            title={darkMode ? 'Light mode' : 'Dark mode'}
-          >
-            {darkMode ? (
-              <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-[#f2b134]" />
-            ) : (
-              <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-[#141210]" />
-            )}
-          </button>
-
-          {/* Quick WhatsApp Action Button */}
-          <button
-            onClick={onOpenWhatsAppWidget}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold bg-[#25D366]/15 text-[#128C7E] dark:text-[#25D366] border border-[#25D366]/40 hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
-            title="Chat directly on WhatsApp"
-          >
-            <MessageCircle className="w-4 h-4 text-[#25D366] group-hover:text-white fill-current" />
-            <span>Order on WhatsApp</span>
-          </button>
-
-          {/* Cart Button */}
-          <button
-            onClick={onOpenCart}
-            aria-label="Open Cart Bag"
-            className="relative inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-full bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] font-bold text-xs sm:text-sm hover:bg-black dark:hover:bg-gray-100 transition-transform active:scale-95 shadow-md"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="hidden xs:inline">Bag</span>
-            {totalCartCount > 0 && (
-              <span className="bg-[#c8392b] text-white text-[11px] font-black min-w-[18px] h-4.5 rounded-full flex items-center justify-center px-1">
-                {totalCartCount}
-              </span>
-            )}
-          </button>
-
-          {/* Mobile hamburger menu toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg text-[#141210] dark:text-white hover:bg-[#141210]/5 dark:hover:bg-white/10 transition-colors"
-            aria-label="Toggle Navigation Menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#f6f1e9] dark:bg-[#1c1916] border-b border-[#141210]/15 dark:border-white/10 px-5 py-4 flex flex-col gap-3 shadow-xl">
+        {/* Zone 2: 4 Clean Single-Line Text Navigation Links */}
+        <nav
+          aria-label="Primary Navigation"
+          className="hidden md:flex items-center gap-7 text-sm font-medium text-[#57524C] dark:text-[#B5AEA4]"
+        >
           <a
             href="#menu"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold py-2 border-b border-[#141210]/10 dark:border-white/10 text-[#141210] dark:text-white"
+            className="hover:text-[#161412] dark:hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 border-transparent hover:border-[#C8392B]"
           >
-            Browse Full Menu
+            Full Menu
           </a>
           <a
-            href="#deals"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold py-2 border-b border-[#141210]/10 dark:border-white/10 flex items-center gap-2 text-[#c8392b] dark:text-[#f2b134]"
+            href="#combos"
+            className="hover:text-[#161412] dark:hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 border-transparent hover:border-[#C8392B]"
           >
-            <Flame className="w-4 h-4 fill-current" /> Hot Combos & Deals
+            Combo Deals
           </a>
           <a
             href="#rewards"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold py-2 border-b border-[#141210]/10 dark:border-white/10 text-[#141210] dark:text-white"
+            className="hover:text-[#161412] dark:hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 border-transparent hover:border-[#C8392B]"
           >
-            FryPoints Rewards Club
+            FryPoints
           </a>
           <a
-            href="#story"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold py-2 border-b border-[#141210]/10 dark:border-white/10 text-[#141210] dark:text-white"
+            href="#kitchen"
+            className="hover:text-[#161412] dark:hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 border-transparent hover:border-[#C8392B]"
           >
-            Our Lahore Kitchen Story
+            Lahore Kitchen
           </a>
-          <a
-            href="#visit"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold py-2 border-b border-[#141210]/10 dark:border-white/10 text-[#141210] dark:text-white"
-          >
-            Location & Hours (Gulberg III)
-          </a>
+        </nav>
 
-          <div className="pt-2 flex flex-col gap-2">
+        {/* Zone 3: Primary Action */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={onOpenCart}
+            aria-label="Open Order Bag"
+            className="min-h-[44px] px-4 py-2 rounded-xl bg-[#161412] dark:bg-[#F2B134] text-[#F7F5F0] dark:text-[#161412] font-semibold text-xs sm:text-sm inline-flex items-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+          >
+            <ShoppingBag className="w-4 h-4 shrink-0" />
+            <span>Order Bag</span>
+            <span className="font-mono-num font-semibold px-1.5 py-0.5 rounded bg-white/15 dark:bg-black/15 text-xs">
+              {totalCartCount}
+            </span>
+          </button>
+
+          {/* Mobile Drawer Trigger (44x44px minimum touch target) */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            className="md:hidden min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-[#161412] dark:text-[#F4F1EA] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-[#F7F5F0] dark:bg-[#181614] border-b border-[#161412]/10 dark:border-white/10 px-4 py-4 space-y-2 shadow-lg">
+          <div className="grid grid-cols-2 gap-2 pb-2 border-b border-[#161412]/10 dark:border-white/10">
+            <a
+              href="#menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center font-semibold text-sm text-[#161412] dark:text-[#F4F1EA] hover:bg-black/5 dark:hover:bg-white/5"
+            >
+              Full Menu
+            </a>
+            <a
+              href="#combos"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center font-semibold text-sm text-[#161412] dark:text-[#F4F1EA] hover:bg-black/5 dark:hover:bg-white/5"
+            >
+              Combo Deals
+            </a>
+            <a
+              href="#rewards"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center font-semibold text-sm text-[#161412] dark:text-[#F4F1EA] hover:bg-black/5 dark:hover:bg-white/5"
+            >
+              FryPoints Club
+            </a>
+            <a
+              href="#kitchen"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center font-semibold text-sm text-[#161412] dark:text-[#F4F1EA] hover:bg-black/5 dark:hover:bg-white/5"
+            >
+              Lahore Kitchen
+            </a>
+          </div>
+
+          <div className="pt-1 flex items-center justify-between gap-2">
             <button
+              type="button"
+              onClick={() => {
+                onToggleDarkMode();
+              }}
+              className="min-h-[44px] px-3.5 rounded-xl border border-[#161412]/15 dark:border-white/15 text-xs font-semibold text-[#161412] dark:text-[#F4F1EA] inline-flex items-center gap-2"
+            >
+              {darkMode ? <Sun className="w-4 h-4 text-[#F2B134]" /> : <Moon className="w-4 h-4" />}
+              <span>{darkMode ? 'Light Theme' : 'Dark Theme'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenWhatsAppWidget();
               }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25D366] text-white font-bold text-sm shadow-md"
+              className="flex-1 min-h-[44px] px-4 rounded-xl bg-[#25D366] text-[#11100E] font-bold text-xs inline-flex items-center justify-center gap-2"
             >
-              <MessageCircle className="w-4 h-4 fill-white" />
-              Order on WhatsApp ({whatsAppConfig.displayPhone})
+              <MessageCircle className="w-4 h-4" />
+              <span>WhatsApp {whatsAppConfig.displayPhone}</span>
             </button>
+          </div>
+
+          <div className="pt-1 text-right">
             <button
+              type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenConfigModal();
               }}
-              className="text-xs text-[#4a443f] dark:text-[#b8b0a5] text-center underline pt-1"
+              className="text-xs text-[#57524C] dark:text-[#B5AEA4] underline py-1"
             >
-              Change WhatsApp Order Number
+              Configure Store WhatsApp Number
             </button>
           </div>
         </div>

@@ -1,6 +1,13 @@
 import { Product } from '../types';
+import heroFeastImg from '../assets/images/hero_frydays_feast_1792772947765.jpg';
+import smashBurgerImg from '../assets/images/smash_burger_closeup_1792772949139.jpg';
+import loadedFriesImg from '../assets/images/loaded_cheese_fries_1792772950224.jpg';
+import chickenWrapImg from '../assets/images/crispy_chicken_wrap_1792772950951.jpg';
+import buffaloWingsImg from '../assets/images/buffalo_wings_platter_1792772951147.jpg';
 
 export const FRY_DAYS_LOGO = '/assets/aistudio/fry_days_logo_small_c6ff3652.png';
+export const FRY_DAYS_STOREFRONT = '/assets/aistudio/ChatGPT_Image_Oct_23__2026__09_57_39_PM_b006631e.png';
+export const HERO_FEAST_IMAGE = heroFeastImg;
 
 export const CATEGORIES = [
   'All',
@@ -16,86 +23,89 @@ export const CATEGORIES = [
 export const PRODUCTS: Product[] = [
   {
     id: 101,
-    name: 'Fry Days Duo Feast Deal',
+    name: 'Fry Days Duo Feast',
     cat: 'Deals',
     price: 1599,
-    tag: 'Save Rs. 350',
-    desc: '2x Classic Fry Days Burgers + 1x Loaded Cheese Fries + 2x Chilled Soft Drinks.',
-    img: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=800&q=80',
+    tag: 'Best Value',
+    desc: 'Two hand-pressed Classic Smash Burgers, one full boat of Loaded Signature Cheese Fries, and two chilled 250ml soft drinks.',
+    img: heroFeastImg,
+    calories: '1,680 kcal',
     isDeal: true,
-    dealItems: ['2x Classic Burger', '1x Loaded Cheese Fries', '2x Soft Drinks']
+    dealItems: ['2x Classic Smash Burger', '1x Loaded Cheese Fries', '2x Chilled Soft Drinks']
   },
   {
     id: 102,
-    name: 'Wrap & Crunch Box Deal',
+    name: 'Wrap & Crunch Box',
     cat: 'Deals',
     price: 1150,
-    tag: 'Special Combo',
-    desc: '1x Crispy Chicken Garlic Mayo Wrap + 1x Large Salted Fries + 1x Soft Drink + Garlic Dip.',
-    img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=800&q=80',
+    tag: 'Signature Box',
+    desc: 'Crispy Chicken Garlic Mayo Wrap paired with double-fried salted skin-on fries, roasted garlic dip, and a chilled drink.',
+    img: chickenWrapImg,
+    calories: '980 kcal',
     isDeal: true,
-    dealItems: ['1x Crispy Chicken Wrap', '1x Large Fries', '1x Soft Drink', 'Garlic Mayo Dip']
+    dealItems: ['1x Crispy Chicken Wrap', '1x Large Salted Fries', '1x Garlic Mayo Dip', '1x Soft Drink']
   },
   {
     id: 103,
-    name: 'Wings & Crunch Platter',
+    name: 'Midnight Wings & Fries Platter',
     cat: 'Deals',
     price: 1290,
-    tag: 'Hot Deal',
-    desc: '12x Buffalo Wings + 1x Classic Salted Fries + 2x House Dips + 2x Drinks.',
-    img: 'https://images.unsplash.com/photo-1527477321055-43615862e771?auto=format&fit=crop&w=800&q=80',
+    tag: 'Late Night',
+    desc: '12 double-fried Buffalo & Honey Garlic wings, large seasoned fries, two house dips, and two soft drinks.',
+    img: buffaloWingsImg,
+    calories: '1,340 kcal',
     isDeal: true,
-    dealItems: ['12x Buffalo Wings', 'Large Salted Fries', '2 Dips', '2 Drinks']
+    dealItems: ['12x Glazed Wings', '1x Large Salted Fries', '2x House Dips', '2x Soft Drinks']
   },
   {
     id: 1,
-    name: 'Classic Fry Days Burger',
+    name: 'Classic Fry Days Smash',
     cat: 'Burgers',
     price: 650,
-    tag: 'Best seller',
-    desc: 'Hand-pressed smash beef patty, aged cheddar, crunch pickles, house secret relish on toasted brioche.',
-    img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80',
+    tag: 'Bestseller',
+    desc: 'Hand-pressed 130g chuck beef patty seared with lacy edges, aged American cheddar, dill pickles, and house burger relish on toasted brioche.',
+    img: smashBurgerImg,
     calories: '640 kcal'
   },
   {
     id: 2,
-    name: 'Crispy Buttermilk Chicken Burger',
-    cat: 'Burgers',
-    price: 620,
-    tag: 'Fan Favorite',
-    desc: '24-hour buttermilk soaked crispy chicken breast, purple cabbage slaw, spicy chipotle mayo.',
-    img: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=700&q=80',
-    calories: '590 kcal',
-    spicy: true
-  },
-  {
-    id: 3,
     name: 'Double Smash Monster',
     cat: 'Burgers',
     price: 890,
-    tag: 'Chef Special',
-    desc: 'Two 120g seared beef patties, double melted gouda & cheddar, caramelized onions, smoked bacon jam.',
-    img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=700&q=80',
+    tag: 'House Special',
+    desc: 'Two 120g smashed beef patties, double melted cheddar, charred sweet onions, dill pickles, and smoky peppercorn sauce.',
+    img: heroFeastImg,
     calories: '820 kcal'
+  },
+  {
+    id: 3,
+    name: 'Crispy Buttermilk Chicken Burger',
+    cat: 'Burgers',
+    price: 620,
+    tag: 'Spicy',
+    desc: '24-hour buttermilk brined chicken thigh fried golden, crisp shredded cabbage slaw, and fiery chipotle mayo.',
+    img: smashBurgerImg,
+    calories: '590 kcal',
+    spicy: true
   },
   {
     id: 201,
     name: 'Crispy Chicken Garlic Mayo Wrap',
     cat: 'Wraps',
     price: 580,
-    tag: 'Top Wrap',
-    desc: 'Golden crispy chicken strips, shredded lettuce, diced tomatoes, pickles, and creamy garlic yogurt mayo in a toasted tortilla.',
-    img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=700&q=80',
+    tag: 'Bestseller',
+    desc: 'Crunchy buttermilk chicken tenders, crisp romaine, diced tomatoes, pickled red onions, and roasted garlic herb mayo in a grilled tortilla.',
+    img: chickenWrapImg,
     calories: '520 kcal'
   },
   {
     id: 202,
-    name: 'Spicy Tikka Crunch Wrap',
+    name: 'Chargrilled Tikka Crunch Wrap',
     cat: 'Wraps',
     price: 550,
-    tag: 'Spicy 🔥',
-    desc: 'Chargrilled clay-oven chicken tikka chunks, crisp cucumbers, pickled red onions, mint raita, and spicy chili sauce.',
-    img: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=700&q=80',
+    tag: 'Spicy',
+    desc: 'Smoky clay-oven chicken tikka strips, crisp onions, fresh mint yogurt drizzle, and crushed chili glaze in warm flatbread.',
+    img: chickenWrapImg,
     calories: '490 kcal',
     spicy: true
   },
@@ -104,30 +114,28 @@ export const PRODUCTS: Product[] = [
     name: 'Smoky BBQ Beef Loaded Wrap',
     cat: 'Wraps',
     price: 640,
-    tag: 'Signature',
-    desc: 'Juicy pulled grilled beef, cheddar drizzle, crispy onion straws, house hickory BBQ sauce in a warm flatbread.',
-    img: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=700&q=80',
+    desc: 'Seared spiced beef strips, molten cheddar drizzle, crispy onion strings, and hickory BBQ sauce wrapped in a toasted tortilla.',
+    img: chickenWrapImg,
     calories: '580 kcal'
   },
   {
     id: 4,
-    name: 'Buffalo Tangy Wings (6pc)',
+    name: 'Buffalo Tangy Wings (6 pcs)',
     cat: 'Wings',
     price: 520,
-    tag: 'Spicy 🔥',
-    desc: 'Double-fried for crispness, drenched in fiery hot sauce, accompanied by cool blue cheese dip.',
-    img: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=700&q=80',
+    tag: 'Spicy',
+    desc: 'Double-fried skin-on chicken wings tossed in cayenne butter buffalo glaze, served with cool herb ranch dip.',
+    img: buffaloWingsImg,
     calories: '480 kcal',
     spicy: true
   },
   {
     id: 5,
-    name: 'Honey Garlic Wings (6pc)',
+    name: 'Honey Garlic Sesame Wings (6 pcs)',
     cat: 'Wings',
     price: 540,
-    tag: 'Sweet & Savory',
-    desc: 'Glazed with organic Sidr honey, roasted garlic reduction, toasted sesame seeds, and chives.',
-    img: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=700&q=80',
+    desc: 'Crispy wings glazed in wildflower honey, slow-roasted garlic reduction, toasted white sesame seeds, and scallions.',
+    img: buffaloWingsImg,
     calories: '510 kcal'
   },
   {
@@ -135,76 +143,63 @@ export const PRODUCTS: Product[] = [
     name: 'Loaded Signature Cheese Fries',
     cat: 'Loaded Fries',
     price: 480,
-    tag: 'Best seller',
-    desc: 'Golden skin-on fries, warm cheddar lava, charred jalapeños, crispy beef bacon bits, spring onions.',
-    img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=700&q=80',
+    tag: 'Bestseller',
+    desc: 'Hand-cut skin-on fries twice-fried golden, smothered in warm cheddar cheese sauce, charred jalapeños, smoky beef bits, and spring onions.',
+    img: loadedFriesImg,
     calories: '560 kcal'
   },
   {
     id: 7,
-    name: 'Chicken Tikka Melt Fries',
+    name: 'Lahori Tikka Melt Fries',
     cat: 'Loaded Fries',
     price: 560,
-    tag: 'Lahore Special',
-    desc: 'Chargrilled clay-oven tikka cubes, mint garlic yogurt drizzle, pickled red onion, crispy sev topping.',
-    img: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=700&q=80',
+    tag: 'Spicy',
+    desc: 'Double-fried potato fries topped with smoky chicken tikka cubes, cheddar melt, mint garlic yogurt, and pickled red onions.',
+    img: loadedFriesImg,
     calories: '610 kcal',
     spicy: true
   },
   {
     id: 8,
-    name: 'Classic Golden Salted Fries',
+    name: 'Hand-Cut Sea Salt Fries',
     cat: 'Sides',
     price: 250,
-    tag: 'Hand-Cut',
-    desc: 'Locally grown potatoes hand-sliced fresh daily, blanched and twice-fried with flaky sea salt.',
-    img: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=700&q=80',
+    desc: 'Fresh Punjab potatoes hand-sliced every morning, soaked, blanched, and double-fried crisp with flaky sea salt.',
+    img: loadedFriesImg,
     calories: '320 kcal'
   },
   {
     id: 9,
-    name: 'Crispy Onion Rings (8pc)',
+    name: 'Spiced Craft Onion Rings (8 pcs)',
     cat: 'Sides',
     price: 320,
-    tag: 'Crispy',
-    desc: 'Sweet yellow onions dipped in spiced craft batter and fried to light golden crunch. Ranch dip included.',
-    img: 'https://images.unsplash.com/photo-1639024471283-03518883512d?auto=format&fit=crop&w=700&q=80',
+    desc: 'Thick-cut sweet yellow onion rings in seasoned crispy batter, served hot with house garlic ranch dip.',
+    img: loadedFriesImg,
     calories: '340 kcal'
   },
   {
     id: 10,
-    name: 'Creamy Apple Slaw',
-    cat: 'Sides',
-    price: 180,
-    tag: 'Fresh',
-    desc: 'Thin shredded red and green cabbage, crisp green apples, cider Dijon vinaigrette dressing.',
-    img: 'https://images.unsplash.com/photo-1625938145313-8e4f0b8b8e0e?auto=format&fit=crop&w=700&q=80',
-    calories: '150 kcal'
-  },
-  {
-    id: 11,
-    name: 'Chilled Soft Drink Can (250ml)',
-    cat: 'Drinks',
-    price: 120,
-    desc: 'Ice-cold can of Coke, Sprite, Fanta, or Diet Coke.',
-    img: 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?auto=format&fit=crop&w=700&q=80',
-    calories: '140 kcal'
-  },
-  {
-    id: 12,
     name: 'Fresh Mint Lemonade',
     cat: 'Drinks',
     price: 220,
-    tag: 'Refreshing',
-    desc: 'Freshly squeezed lemons, garden mint leaves, black salt, and sparkling soda.',
-    img: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?auto=format&fit=crop&w=700&q=80',
+    desc: 'Freshly squeezed lemons, crushed garden mint leaves, black salt, and chilled sparkling soda.',
+    img: heroFeastImg,
     calories: '95 kcal'
+  },
+  {
+    id: 11,
+    name: 'Chilled Soft Drink (250ml Can)',
+    cat: 'Drinks',
+    price: 120,
+    desc: 'Ice-cold can — Coca-Cola, Sprite, Fanta, or Coke Zero.',
+    img: heroFeastImg,
+    calories: '140 kcal'
   }
 ];
 
 export const DEFAULT_WHATSAPP_CONFIG = {
   phoneNumber: '923261180202',
   displayPhone: '+92 326 1180202',
-  branchName: 'Fry Days Lahore',
+  branchName: 'Fry Days Gulberg III',
   city: 'Lahore, Pakistan'
 };

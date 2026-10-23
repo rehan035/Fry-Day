@@ -4,44 +4,34 @@
 
 @layer base {
   :root {
-    --ink: #141210;
-    --ink-soft: #4a443f;
-    --paper: #f6f1e9;
-    --paper-2: #efe7da;
-    --card-bg: #ffffff;
-    --card-border: rgba(20, 18, 16, 0.1);
-    --fry: #f2b134;
-    --fry-deep: #e08e1b;
-    --ketchup: #c8392b;
-    --whatsapp: #25D366;
-    --whatsapp-dark: #128C7E;
     --font-heading: 'Bricolage Grotesque', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
   }
 
-  .dark {
-    --ink: #f6f1e9;
-    --ink-soft: #b8b0a5;
-    --paper: #12100e;
-    --paper-2: #1a1714;
-    --card-bg: #1c1916;
-    --card-border: rgba(246, 241, 233, 0.12);
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     font-family: var(--font-body);
-    background-color: var(--paper);
-    color: var(--ink);
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-heading);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .font-mono-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Hide scrollbar for category tabs */
+/* Hide scrollbar for horizontal category strip */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -50,34 +40,11 @@
   scrollbar-width: none;
 }
 
-/* Custom shimmer animation for image placeholders */
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.animate-shimmer {
-  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.6) 50%, transparent 80%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-}
-
-.dark .animate-shimmer {
-  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.08) 50%, transparent 80%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-}
-
-/* Floating animation */
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.animate-float-slow {
-  animation: floaty 5s ease-in-out infinite;
-}
-
-.animate-float-fast {
-  animation: floaty 3.8s ease-in-out infinite 0.6s;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

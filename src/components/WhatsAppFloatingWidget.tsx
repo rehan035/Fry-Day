@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, X, Send, ShoppingBag, Sparkles, Settings } from 'lucide-react';
+import { MessageCircle, X, Send, ShoppingBag, Settings } from 'lucide-react';
 import { CartItem, WhatsAppConfig } from '../types';
 import { formatPKR, generateQuickInquiryWhatsAppUrl } from '../utils/whatsapp';
 import { FRY_DAYS_LOGO } from '../data/menu';
@@ -41,162 +41,151 @@ export const WhatsAppFloatingWidget: React.FC<WhatsAppFloatingWidgetProps> = ({
 
   return (
     <>
-      {/* Floating Trigger Button (hidden when drawer is open) */}
-      <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-40 flex items-center gap-2">
-        {!isOpen && (
-          <button
-            onClick={onToggle}
-            className="hidden sm:flex items-center gap-2 bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] text-xs font-bold px-3.5 py-2.5 rounded-full shadow-xl border border-white/10 hover:scale-105 active:scale-95 transition-all"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse"></span>
-            <span>WhatsApp: {whatsAppConfig.displayPhone}</span>
-          </button>
-        )}
-
+      {/* Floating WhatsApp Trigger (Desktop & Mobile when drawer is closed) */}
+      <div className="fixed bottom-5 right-4 sm:right-6 z-40">
         <button
+          type="button"
           onClick={onToggle}
-          aria-label="Open WhatsApp live chat"
-          className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 ring-4 ring-[#25D366]/30"
+          aria-label={isOpen ? 'Close WhatsApp support drawer' : 'Open WhatsApp support drawer'}
+          className="min-h-[48px] px-4 py-2.5 rounded-full bg-[#25D366] text-[#11100E] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:bg-[#20BD5A] active:scale-95 transition-all whitespace-nowrap"
         >
           {isOpen ? (
-            <X className="w-6 h-6 stroke-[2.5]" />
+            <>
+              <X className="w-4 h-4 stroke-[2.5]" />
+              <span>Close Chat</span>
+            </>
           ) : (
             <>
-              <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 fill-white" />
-              <span className="absolute top-0 right-0 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#2f5d3a] border-2 border-white rounded-full flex items-center justify-center">
-                <span className="w-2 h-2 bg-[#25D366] rounded-full animate-ping"></span>
-              </span>
+              <MessageCircle className="w-5 h-5" />
+              <span>WhatsApp Order</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Floating Chat Modal / Drawer */}
+      {/* WhatsApp Direct Drawer */}
       {isOpen && (
-        <div className="fixed bottom-20 md:bottom-22 right-2 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-96 max-h-[82vh] bg-white dark:bg-[#1c1916] rounded-3xl shadow-2xl border border-[#141210]/15 dark:border-white/15 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div
+          role="dialog"
+          aria-label="WhatsApp Direct Kitchen Desk"
+          className="fixed bottom-20 right-3 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-96 max-h-[80vh] bg-[#F7F5F0] dark:bg-[#181614] rounded-2xl shadow-2xl border border-[#161412]/15 dark:border-white/15 overflow-hidden flex flex-col"
+        >
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#128C7E] to-[#25D366] text-white p-3.5 sm:p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-inner">
-                  <img src={FRY_DAYS_LOGO} alt="Fry Days" className="w-full h-full object-contain" />
-                </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#25D366] border-2 border-white rounded-full"></span>
-              </div>
+          <div className="bg-[#161412] text-white px-4 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img
+                src={FRY_DAYS_LOGO}
+                alt="Fry Days"
+                referrerPolicy="no-referrer"
+                className="h-9 w-auto object-contain"
+              />
               <div>
-                <h4 className="font-bold text-sm sm:text-base leading-tight">Fry Days Kitchen</h4>
-                <p className="text-[11px] text-white/90 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                  Online • {whatsAppConfig.displayPhone}
+                <h4 className="font-display font-bold text-sm text-white leading-tight">
+                  Fry Days Kitchen Desk
+                </h4>
+                <p className="font-mono-num text-[11px] text-[#25D366]">
+                  {whatsAppConfig.displayPhone}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 text-white/80">
+            <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={onOpenConfigModal}
-                title="Change WhatsApp Phone Number"
-                className="p-1.5 rounded-lg hover:bg-white/20 transition-colors"
+                aria-label="Configure WhatsApp phone number"
+                className="min-h-[40px] min-w-[40px] rounded-lg flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <Settings className="w-4 h-4 text-white" />
+                <Settings className="w-4 h-4" />
               </button>
               <button
+                type="button"
                 onClick={onToggle}
-                className="p-1.5 rounded-lg hover:bg-white/20 transition-colors"
+                aria-label="Close drawer"
+                className="min-h-[40px] min-w-[40px] rounded-lg flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5 text-white" />
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {/* Body Content */}
-          <div className="p-3.5 sm:p-4 overflow-y-auto space-y-3 sm:space-y-4 bg-[#efe7da]/30 dark:bg-black/30 flex-1 max-h-[380px]">
-            {/* Store Greeting Bubble */}
-            <div className="bg-white dark:bg-[#141210] p-3 sm:p-3.5 rounded-2xl rounded-tl-sm shadow-sm border border-[#141210]/10 dark:border-white/10 text-xs sm:text-sm text-[#141210] dark:text-white space-y-1.5">
-              <p className="font-bold flex items-center gap-1.5 text-[#128C7E] dark:text-[#25D366]">
-                <Sparkles className="w-4 h-4 text-[#f2b134]" /> Salam from Fry Days Lahore! 🍟
-              </p>
-              <p className="text-[#4a443f] dark:text-[#b8b0a5] text-xs">
-                Burgers, wraps, and loaded fries delivered hot to your doorstep. How can we help you?
-              </p>
-              <p className="text-[10px] text-gray-400 text-right">{whatsAppConfig.displayPhone}</p>
-            </div>
+          {/* Drawer Body */}
+          <div className="p-4 overflow-y-auto space-y-4 flex-1">
+            <p className="text-xs text-[#57524C] dark:text-[#B5AEA4] leading-relaxed">
+              Message our Gulberg III kitchen directly on WhatsApp for custom burger orders, live delivery ETA, or late-night group platters.
+            </p>
 
-            {/* Cart Quick Order Card (if items are in bag) */}
+            {/* Active Cart Shortcut */}
             {totalCount > 0 && (
-              <div className="bg-[#f6f1e9] dark:bg-white/5 border-2 border-[#25D366]/40 p-3 rounded-2xl shadow-sm space-y-2">
-                <div className="flex items-center justify-between text-xs text-[#141210] dark:text-white">
-                  <span className="font-bold flex items-center gap-1.5">
-                    <ShoppingBag className="w-3.5 h-3.5 text-[#c8392b]" /> {totalCount} item(s) in bag
+              <div className="pt-3 border-t border-[#161412]/10 dark:border-white/10 space-y-2">
+                <div className="flex items-center justify-between text-xs text-[#161412] dark:text-white">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    <ShoppingBag className="w-3.5 h-3.5 text-[#C8392B]" />
+                    <span>{totalCount} item(s) ready in bag</span>
                   </span>
-                  <span className="font-extrabold">{formatPKR(cartTotal)}</span>
+                  <span className="font-mono-num font-bold">{formatPKR(cartTotal)}</span>
                 </div>
                 <button
+                  type="button"
                   onClick={onOpenCartModal}
-                  className="w-full py-2 px-3 rounded-xl bg-[#25D366] text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#20ba59] transition-all shadow-md active:scale-95"
+                  className="w-full min-h-[44px] px-3 rounded-xl bg-[#25D366] text-[#11100E] font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#20BD5A] transition-colors"
                 >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  Proceed to WhatsApp Checkout →
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Checkout Bag via WhatsApp</span>
                 </button>
               </div>
             )}
 
-            {/* Quick Inquiry Prompts */}
-            <div className="space-y-1.5">
-              <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#4a443f] dark:text-[#b8b0a5]">
-                Tap for Quick WhatsApp Reply
-              </p>
+            {/* Quick Pre-Filled Questions */}
+            <div className="pt-3 border-t border-[#161412]/10 dark:border-white/10 space-y-2">
+              <span className="block text-xs font-semibold text-[#161412] dark:text-[#F4F1EA]">
+                Quick Kitchen Questions
+              </span>
               <div className="flex flex-col gap-1.5">
                 <button
-                  onClick={() => handleQuickChipClick("Hi! What is the estimated delivery time to my location in Lahore?")}
-                  className="text-left text-xs bg-white dark:bg-[#141210] hover:bg-[#f6f1e9] dark:hover:bg-white/10 text-[#141210] dark:text-white font-medium p-2.5 rounded-xl border border-[#141210]/10 dark:border-white/10 transition-all shadow-2xs hover:border-[#25D366]"
+                  type="button"
+                  onClick={() => handleQuickChipClick('Hi Fry Days! What is the current delivery time to my area in Lahore?')}
+                  className="min-h-[42px] text-left text-xs bg-white dark:bg-[#221F1C] hover:border-[#25D366] text-[#161412] dark:text-[#F4F1EA] font-medium px-3 py-2 rounded-xl border border-[#161412]/10 dark:border-white/10 transition-colors"
                 >
-                  🛵 What's your delivery time in Lahore?
+                  Current delivery time in Lahore?
                 </button>
                 <button
-                  onClick={() => handleQuickChipClick("Hi! What are today's special deals and combos?")}
-                  className="text-left text-xs bg-white dark:bg-[#141210] hover:bg-[#f6f1e9] dark:hover:bg-white/10 text-[#141210] dark:text-white font-medium p-2.5 rounded-xl border border-[#141210]/10 dark:border-white/10 transition-all shadow-2xs hover:border-[#25D366]"
+                  type="button"
+                  onClick={() => handleQuickChipClick('Hi Fry Days! Please share today’s combo deals and family platters.')}
+                  className="min-h-[42px] text-left text-xs bg-white dark:bg-[#221F1C] hover:border-[#25D366] text-[#161412] dark:text-[#F4F1EA] font-medium px-3 py-2 rounded-xl border border-[#161412]/10 dark:border-white/10 transition-colors"
                 >
-                  🔥 Today's hot combo deals & prices
+                  Today’s combo deals & platters
                 </button>
                 <button
-                  onClick={() => handleQuickChipClick("Hi! Can I place a custom order or bulk party order?")}
-                  className="text-left text-xs bg-white dark:bg-[#141210] hover:bg-[#f6f1e9] dark:hover:bg-white/10 text-[#141210] dark:text-white font-medium p-2.5 rounded-xl border border-[#141210]/10 dark:border-white/10 transition-all shadow-2xs hover:border-[#25D366]"
+                  type="button"
+                  onClick={() => handleQuickChipClick('Hi Fry Days! Please share your Gulberg III dine-in location pin.')}
+                  className="min-h-[42px] text-left text-xs bg-white dark:bg-[#221F1C] hover:border-[#25D366] text-[#161412] dark:text-[#F4F1EA] font-medium px-3 py-2 rounded-xl border border-[#161412]/10 dark:border-white/10 transition-colors"
                 >
-                  🎉 Party / Bulk burger & wrap orders
+                  Gulberg III dine-in & pickup pin
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Custom Message Input Form */}
-          <form onSubmit={handleSendCustomMessage} className="p-3 bg-white dark:bg-[#141210] border-t border-[#141210]/10 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={customMsg}
-                onChange={(e) => setCustomMsg(e.target.value)}
-                placeholder="Type your message or order..."
-                className="flex-1 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#141210]/15 dark:border-white/10 bg-[#f6f1e9]/50 dark:bg-white/5 text-[#141210] dark:text-white focus:outline-none focus:border-[#25D366] transition-all"
-              />
-              <button
-                type="submit"
-                aria-label="Send WhatsApp message"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center hover:bg-[#20ba59] active:scale-95 transition-all shadow-md shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-[#4a443f] dark:text-[#b8b0a5] mt-1.5 px-1">
-              <span>Direct WhatsApp: {whatsAppConfig.displayPhone}</span>
-              <button
-                type="button"
-                onClick={onOpenConfigModal}
-                className="text-[#128C7E] dark:text-[#25D366] underline"
-              >
-                Settings
-              </button>
-            </div>
+          {/* Direct Message Composer */}
+          <form
+            onSubmit={handleSendCustomMessage}
+            className="p-3 bg-white dark:bg-[#141210] border-t border-[#161412]/10 dark:border-white/10 flex items-center gap-2"
+          >
+            <input
+              type="text"
+              value={customMsg}
+              onChange={(e) => setCustomMsg(e.target.value)}
+              placeholder="Write a message to Fry Days..."
+              className="flex-1 text-sm px-3.5 py-2.5 rounded-xl border border-[#161412]/15 dark:border-white/15 bg-[#F7F5F0] dark:bg-[#221F1C] text-[#161412] dark:text-white focus:outline-none focus:border-[#25D366]"
+            />
+            <button
+              type="submit"
+              aria-label="Send message to WhatsApp"
+              className="min-h-[44px] min-w-[44px] rounded-xl bg-[#25D366] text-[#11100E] flex items-center justify-center hover:bg-[#20BD5A] transition-colors shrink-0"
+            >
+              <Send className="w-4 h-4" />
+            </button>
           </form>
         </div>
       )}

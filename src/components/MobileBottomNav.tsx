@@ -1,5 +1,5 @@
 import React from 'react';
-import { UtensilsCrossed, Flame, MessageCircle, ShoppingBag } from 'lucide-react';
+import { ShoppingBag, MessageCircle } from 'lucide-react';
 import { CartItem, WhatsAppConfig } from '../types';
 import { formatPKR } from '../utils/whatsapp';
 
@@ -12,58 +12,33 @@ interface MobileBottomNavProps {
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   cartItems,
-  onOpenCart,
-  onOpenWhatsAppWidget
+  onOpenCart
 }) => {
   const totalCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const cartSubtotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const cartSubtotal = cartItems.reduce((acc, item) => {
+    let unit = item.product.price;
+    if (item.extraCheese) unit += 80;
+    if (item.extraJalapeno) unit += 50;
+    return acc + unit * item.quantity;
+  }, 0);
+
+  // Only show the sticky bottom checkout bar when items are in the bag (respects 15% mobile sticky cap)
+  if (totalCount === 0) return null;
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#f6f1e9]/95 dark:bg-[#141210]/95 backdrop-blur-lg border-t border-[#141210]/10 dark:border-white/10 px-3 py-2 flex items-center justify-around shadow-2xl safe-area-pb">
-      {/* Menu link */}
-      <a
-        href="#menu"
-        className="flex flex-col items-center gap-0.5 text-[#4a443f] dark:text-[#b8b0a5] hover:text-[#141210] dark:hover:text-white py-1 px-2.5 active:scale-95 transition-transform"
-      >
-        <UtensilsCrossed className="w-5 h-5 text-[#141210] dark:text-white" />
-        <span className="text-[10px] font-bold">Menu</span>
-      </a>
-
-      {/* Deals link */}
-      <a
-        href="#deals"
-        className="flex flex-col items-center gap-0.5 text-[#c8392b] dark:text-[#f2b134] py-1 px-2.5 active:scale-95 transition-transform"
-      >
-        <Flame className="w-5 h-5 fill-current" />
-        <span className="text-[10px] font-bold">Combos</span>
-      </a>
-
-      {/* WhatsApp Chat button */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-gradient-to-t from-[#F7F5F0] via-[#F7F5F0] to-transparent dark:from-[#11100E] dark:via-[#11100E]">
       <button
-        onClick={onOpenWhatsAppWidget}
-        className="flex flex-col items-center gap-0.5 text-[#128C7E] dark:text-[#25D366] py-1 px-2.5 active:scale-95 transition-transform relative"
-      >
-        <div className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-md">
-          <MessageCircle className="w-4 h-4 fill-white" />
-        </div>
-        <span className="text-[10px] font-bold text-[#128C7E] dark:text-[#25D366]">WhatsApp</span>
-      </button>
-
-      {/* Cart button */}
-      <button
+        type="button"
         onClick={onOpenCart}
-        className="flex flex-col items-center gap-0.5 text-[#141210] dark:text-white py-1 px-2.5 active:scale-95 transition-transform relative"
+        className="w-full min-h-[48px] px-4 rounded-xl bg-[#161412] dark:bg-[#F2B134] text-[#F7F5F0] dark:text-[#161412] font-bold text-sm flex items-center justify-between shadow-lg active:scale-[0.99] transition-transform"
       >
-        <div className="relative">
-          <ShoppingBag className="w-5 h-5 text-[#141210] dark:text-white" />
-          {totalCount > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-[#c8392b] text-white text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center">
-              {totalCount}
-            </span>
-          )}
-        </div>
-        <span className="text-[10px] font-bold">
-          {totalCount > 0 ? formatPKR(cartSubtotal) : 'Bag'}
+        <span className="inline-flex items-center gap-2">
+          <ShoppingBag className="w-4 h-4" />
+          <span>View Order Bag ({totalCount})</span>
+        </span>
+        <span className="font-mono-num font-bold inline-flex items-center gap-1.5">
+          <span>{formatPKR(cartSubtotal)}</span>
+          <MessageCircle className="w-4 h-4 text-[#25D366] dark:text-[#161412]" />
         </span>
       </button>
     </div>

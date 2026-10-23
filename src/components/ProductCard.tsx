@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, MessageCircle, Flame, Eye } from 'lucide-react';
+import { Plus, MessageCircle, Utensils } from 'lucide-react';
 import { Product, WhatsAppConfig } from '../types';
 import { formatPKR, generateSingleProductWhatsAppUrl } from '../utils/whatsapp';
 
@@ -16,7 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onSelectProduct,
   whatsAppConfig
 }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const handleWhatsAppQuickOrder = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -32,105 +32,93 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <article
       onClick={() => onSelectProduct(product)}
-      className="group bg-white dark:bg-[#1c1916] rounded-2xl overflow-hidden border border-[#141210]/10 dark:border-white/10 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer relative"
+      className="group bg-white dark:bg-[#181614] rounded-2xl overflow-hidden border border-[#161412]/10 dark:border-white/10 flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5 cursor-pointer"
     >
       <div>
-        {/* Image Container with Shimmer */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-[#efe7da] dark:bg-[#25211c]">
-          {!imageLoaded && (
-            <div className="absolute inset-0 animate-shimmer bg-[#efe7da] dark:bg-[#25211c]" />
+        {/* 4:3 Product Image with Zero-Broken-Image Fallback */}
+        <div className="relative aspect-[4/3] overflow-hidden bg-[#1C1916]">
+          {!imgError ? (
+            <img
+              src={product.img}
+              alt={product.name}
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-[#231F1B] to-[#161412] text-[#F4F1EA]">
+              <Utensils className="w-7 h-7 text-[#F2B134] mb-2 opacity-80" />
+              <span className="font-display font-bold text-sm">{product.name}</span>
+            </div>
           )}
-
-          <img
-            src={product.img}
-            alt={product.name}
-            loading="lazy"
-            decoding="async"
-            onLoad={() => setImageLoaded(true)}
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-
-          {/* Tags */}
-          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
-            {product.tag && (
-              <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-[#c8392b] text-white px-2.5 py-0.5 sm:py-1 rounded-md shadow-sm">
-                {product.tag}
-              </span>
-            )}
-            {product.isDeal && (
-              <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-[#f2b134] text-[#141210] px-2 py-0.5 rounded-md shadow-sm">
-                Combo Deal
-              </span>
-            )}
-          </div>
-
-          {/* Quick preview hover badge */}
-          <div className="absolute bottom-2.5 right-2.5 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 backdrop-blur-xs text-white text-[10px] sm:text-[11px] font-medium px-2 py-0.5 sm:py-1 rounded-md flex items-center gap-1">
-            <Eye className="w-3 h-3" /> Customize
-          </div>
         </div>
 
-        {/* Content Body */}
-        <div className="p-3.5 sm:p-5 flex-1 flex flex-col">
-          <div className="flex items-start justify-between gap-1.5 mb-1">
-            <h3 className="font-display font-black text-base sm:text-lg text-[#141210] dark:text-white leading-snug group-hover:text-[#c8392b] dark:group-hover:text-[#f2b134] transition-colors">
-              {product.name}
-            </h3>
-            {product.spicy && (
-              <span title="Spicy" className="text-[#c8392b] dark:text-[#ff6b6b] mt-0.5 shrink-0">
-                <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
-              </span>
+        {/* Card Content — Unboxed Metadata + Title + Description */}
+        <div className="p-4 sm:p-5 flex-1 flex flex-col">
+          {/* Unboxed Metadata Line (Zero-Pill Discipline) */}
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#57524C] dark:text-[#B5AEA4] mb-1.5">
+            <span className="font-medium">{product.cat}</span>
+            {product.calories && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="font-mono-num">{product.calories}</span>
+              </>
+            )}
+            {product.tag && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="font-semibold text-[#C8392B] dark:text-[#F2B134]">
+                  {product.tag}
+                </span>
+              </>
             )}
           </div>
 
-          <p className="text-[11px] sm:text-xs text-[#4a443f] dark:text-[#b8b0a5] line-clamp-2 leading-relaxed mb-2.5 flex-1">
+          <h3 className="font-display font-bold text-base sm:text-lg text-[#161412] dark:text-[#F4F1EA] leading-snug group-hover:text-[#C8392B] dark:group-hover:text-[#F2B134] transition-colors">
+            {product.name}
+          </h3>
+
+          <p className="text-xs sm:text-sm text-[#57524C] dark:text-[#B5AEA4] line-clamp-2 leading-relaxed mt-1.5">
             {product.desc}
           </p>
 
-          {/* Deal items preview if deal */}
           {product.dealItems && product.dealItems.length > 0 && (
-            <div className="mb-2.5 bg-[#f6f1e9] dark:bg-white/5 p-2 rounded-lg border border-[#141210]/5 dark:border-white/5 text-[10px] sm:text-[11px] text-[#141210] dark:text-white">
-              <span className="font-bold text-[#c8392b] dark:text-[#f2b134] block mb-0.5">Includes:</span>
-              <ul className="list-disc list-inside space-y-0.5 text-[#4a443f] dark:text-[#b8b0a5]">
-                {product.dealItems.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
+            <div className="mt-3 pt-2.5 border-t border-[#161412]/10 dark:border-white/10 text-xs text-[#57524C] dark:text-[#B5AEA4]">
+              {product.dealItems.join(' · ')}
             </div>
           )}
         </div>
       </div>
 
-      {/* Footer with Price and Actions */}
-      <div className="px-3.5 pb-3.5 sm:px-5 sm:pb-5 pt-0 flex items-center justify-between gap-2 border-t border-[#141210]/5 dark:border-white/5 mt-auto">
-        <div className="flex flex-col">
-          <span className="font-display font-black text-base sm:text-lg text-[#141210] dark:text-white">
+      {/* Card Footer: Tabular Price + 44px Touch Targets */}
+      <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-3 flex items-center justify-between gap-2 border-t border-[#161412]/10 dark:border-white/10">
+        <div>
+          <span className="font-mono-num font-bold text-base sm:text-lg text-[#161412] dark:text-[#F4F1EA]">
             {formatPKR(product.price)}
-          </span>
-          <span className="text-[9px] sm:text-[10px] text-[#4a443f] dark:text-[#b8b0a5] font-medium uppercase tracking-wider">
-            PKR Net
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Quick WhatsApp order button */}
+        <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={handleWhatsAppQuickOrder}
-            title="Direct WhatsApp Order"
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#25D366]/15 hover:bg-[#25D366] text-[#128C7E] dark:text-[#25D366] hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95 border border-[#25D366]/30"
+            title={`Order ${product.name} on WhatsApp`}
+            aria-label={`Order ${product.name} on WhatsApp`}
+            className="min-h-[44px] min-w-[44px] px-3 rounded-xl border border-[#161412]/15 dark:border-white/15 text-[#161412] dark:text-[#F4F1EA] hover:border-[#25D366] hover:text-[#25D366] dark:hover:border-[#25D366] dark:hover:text-[#25D366] inline-flex items-center justify-center transition-colors active:scale-95"
           >
-            <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
+            <MessageCircle className="w-4 h-4 shrink-0" />
           </button>
 
-          {/* Add to Cart button */}
           <button
+            type="button"
             onClick={handleQuickAdd}
-            aria-label={`Add ${product.name} to cart`}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#f2b134] hover:bg-[#e08e1b] text-[#141210] flex items-center justify-center font-bold transition-transform duration-200 active:scale-95 shadow-sm"
+            aria-label={`Add ${product.name} to bag`}
+            className="min-h-[44px] px-3.5 rounded-xl bg-[#F2B134] hover:bg-[#E09E22] text-[#161412] font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-1.5 transition-colors active:scale-95 whitespace-nowrap shrink-0"
           >
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+            <Plus className="w-4 h-4 stroke-[2.5] shrink-0" />
+            <span>Add</span>
           </button>
         </div>
       </div>

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search, Flame, Sparkles, MessageCircle, ArrowRight } from 'lucide-react';
+import { Search, MessageCircle, X } from 'lucide-react';
 import { CATEGORIES, PRODUCTS, DEFAULT_WHATSAPP_CONFIG } from './data/menu';
 import { CartItem, Product, WhatsAppConfig } from './types';
 import { Navbar } from './components/Navbar';
@@ -21,7 +21,7 @@ import { Footer } from './components/Footer';
 import { Toast } from './components/Toast';
 
 export default function App() {
-  // Dark mode state
+  // Dark mode state persisted to localStorage
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('frydays_dark_mode');
@@ -66,7 +66,6 @@ export default function App() {
       const saved = localStorage.getItem('frydays_wa_config');
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Ensure new phone +92 326 1180202 is used if old default was present
         if (parsed.phoneNumber === '923000000000') {
           return DEFAULT_WHATSAPP_CONFIG;
         }
@@ -85,7 +84,6 @@ export default function App() {
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Sync cart to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('frydays_cart_items', JSON.stringify(cartItems));
@@ -94,7 +92,6 @@ export default function App() {
     }
   }, [cartItems]);
 
-  // Sync WhatsApp config to localStorage
   const handleSaveConfig = (newConfig: WhatsAppConfig) => {
     setWhatsAppConfig(newConfig);
     try {
@@ -105,11 +102,14 @@ export default function App() {
     setToastMessage(`WhatsApp updated to ${newConfig.displayPhone}`);
   };
 
-  // Add product to cart directly (from card)
   const handleAddToCart = (product: Product) => {
     setCartItems((prev) => {
       const existingIndex = prev.findIndex(
-        (item) => item.product.id === product.id && !item.extraCheese && !item.extraJalapeno && item.spiceLevel === 'Regular'
+        (item) =>
+          item.product.id === product.id &&
+          !item.extraCheese &&
+          !item.extraJalapeno &&
+          item.spiceLevel === 'Regular'
       );
       if (existingIndex > -1) {
         const next = [...prev];
@@ -129,16 +129,14 @@ export default function App() {
         }
       ];
     });
-    setToastMessage(`${product.name} added to bag!`);
+    setToastMessage(`${product.name} added to bag`);
   };
 
-  // Add customized item from ProductModal
   const handleAddCustomCartItem = (newItem: CartItem) => {
     setCartItems((prev) => [...prev, newItem]);
-    setToastMessage(`${newItem.product.name} customized and added to bag!`);
+    setToastMessage(`${newItem.product.name} added to bag`);
   };
 
-  // Update item quantity in cart
   const handleUpdateQuantity = (id: number, delta: number) => {
     setCartItems((prev) =>
       prev
@@ -153,22 +151,18 @@ export default function App() {
     );
   };
 
-  // Remove specific item from cart
   const handleRemoveItem = (id: number) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
     setToastMessage('Item removed from bag');
   };
 
-  // Clear entire cart
   const handleClearCart = () => {
     setCartItems([]);
   };
 
-  // Calculate accumulated points (from cart & demo base)
   const cartSubtotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const currentFryPoints = 48 + Math.floor(cartSubtotal / 100);
 
-  // Filtered products list
   const filteredProducts = PRODUCTS.filter((product) => {
     const matchesCategory =
       activeCategory === 'All'
@@ -187,12 +181,11 @@ export default function App() {
     return matchesCategory && matchesSearch && matchesSpicy;
   });
 
-  // Separate combo deals for the Deals spotlight
   const dealProducts = PRODUCTS.filter((p) => p.isDeal);
 
   return (
-    <div className="min-h-screen bg-[#f6f1e9] dark:bg-[#12100e] text-[#141210] dark:text-[#f6f1e9] flex flex-col font-sans transition-colors duration-200">
-      {/* Top Navigation */}
+    <div className="min-h-screen bg-[#F7F5F0] dark:bg-[#11100E] text-[#161412] dark:text-[#F4F1EA] flex flex-col font-sans">
+      {/* Top Bar Contract Navigation */}
       <Navbar
         cartItems={cartItems}
         onOpenCart={() => setIsCartOpen(true)}
@@ -203,41 +196,33 @@ export default function App() {
         onToggleDarkMode={() => setDarkMode(!darkMode)}
       />
 
-      {/* Hero Section */}
+      {/* Hero Section with Prominent Official Logo & Studio Feast */}
       <Hero
         whatsAppConfig={whatsAppConfig}
         onOpenWhatsAppWidget={() => setIsWhatsAppWidgetOpen(true)}
+        onAddFeaturedDeal={handleAddToCart}
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode(!darkMode)}
       />
 
-      {/* Featured Deals Spotlight */}
-      <section id="deals" className="py-10 sm:py-16 bg-[#efe7da]/50 dark:bg-[#1a1714] border-b border-[#141210]/10 dark:border-white/10 transition-colors">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6 sm:mb-8">
+      {/* Featured Combo Platters Section */}
+      <section id="combos" className="py-12 sm:py-16 border-b border-[#161412]/10 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#c8392b] dark:text-[#f2b134] bg-[#c8392b]/10 dark:bg-[#f2b134]/10 px-3 py-1 rounded-full">
-                🔥 Hot Feasts & Combos
-              </span>
-              <h2 className="font-display font-black text-2xl sm:text-3xl text-[#141210] dark:text-white mt-2">
-                Fry Days Mega Deals
+              <div className="text-xs font-semibold text-[#C8392B] dark:text-[#F2B134] mb-1">
+                Value Platters · Prepared Fresh to Order
+              </div>
+              <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#161412] dark:text-[#F4F1EA]">
+                Signature Combo Feasts
               </h2>
-              <p className="text-xs sm:text-sm text-[#4a443f] dark:text-[#b8b0a5] mt-1">
-                Value-packed deals designed for Lahore food lovers. Save up to Rs. 350 on every combo.
-              </p>
             </div>
-            <button
-              onClick={() => {
-                setActiveCategory('Deals');
-                const menuEl = document.getElementById('menu');
-                menuEl?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c8392b] dark:text-[#f2b134] hover:underline self-start sm:self-auto"
-            >
-              <span>View all deals</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            <p className="text-xs sm:text-sm text-[#57524C] dark:text-[#B5AEA4]">
+              Save up to Rs. 350 on house burger, wrap, and wing combinations.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {dealProducts.map((deal) => (
               <ProductCard
                 key={deal.id}
@@ -251,40 +236,39 @@ export default function App() {
         </div>
       </section>
 
-      {/* Menu Section */}
-      <section id="menu" className="py-12 sm:py-20 border-b border-[#141210]/10 dark:border-white/10">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Menu Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-6 sm:mb-8">
+      {/* Main Kitchen Menu Catalog */}
+      <section id="menu" className="py-14 sm:py-20 border-b border-[#161412]/10 dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Header & Search Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
             <div>
-              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#c8392b] dark:text-[#f2b134] bg-[#c8392b]/10 dark:bg-[#f2b134]/10 px-3 py-1 rounded-full">
-                Our Kitchen Menu
-              </span>
-              <h2 className="font-display font-black text-2xl sm:text-4xl text-[#141210] dark:text-white mt-2">
-                Fries, Burgers & Wraps
+              <div className="text-xs font-semibold text-[#C8392B] dark:text-[#F2B134] mb-1">
+                Full Kitchen Menu · Gulberg III, Lahore
+              </div>
+              <h2 className="font-display font-bold text-2xl sm:text-4xl text-[#161412] dark:text-[#F4F1EA]">
+                Fries, Smash Burgers & Wraps
               </h2>
-              <p className="text-xs sm:text-sm text-[#4a443f] dark:text-[#b8b0a5] mt-1">
-                Everything cooked to order. Tap <strong>+</strong> to add to bag, or tap <strong>WhatsApp</strong> for 1-click dispatch.
-              </p>
             </div>
 
-            {/* Search Input & Spicy Toggle */}
+            {/* Search & Spicy Filter Toolbar */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-              <div className="relative">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="relative flex-1 sm:w-64">
+                <Search className="w-4 h-4 text-[#57524C] dark:text-[#B5AEA4] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search burgers, wraps, fries..."
-                  className="w-full sm:w-64 text-sm pl-9 pr-8 py-2 sm:py-2.5 rounded-full border border-[#141210]/15 dark:border-white/10 bg-white dark:bg-[#1c1916] text-[#141210] dark:text-white focus:outline-none focus:border-[#141210] dark:focus:border-[#f2b134] shadow-2xs"
+                  placeholder="Search burgers, wraps, wings..."
+                  className="w-full min-h-[44px] text-sm pl-10 pr-9 py-2 rounded-xl border border-[#161412]/15 dark:border-white/15 bg-white dark:bg-[#181614] text-[#161412] dark:text-[#F4F1EA] focus:outline-none focus:border-[#161412] dark:focus:border-[#F2B134]"
                 />
                 {searchQuery && (
                   <button
+                    type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-black dark:hover:text-white"
+                    aria-label="Clear search"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-[#57524C] hover:text-[#161412] dark:hover:text-white"
                   >
-                    ✕
+                    <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -292,55 +276,67 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setOnlySpicy(!onlySpicy)}
-                className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-2.5 rounded-full text-xs font-bold border transition-all ${
+                className={`min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold border transition-colors whitespace-nowrap shrink-0 ${
                   onlySpicy
-                    ? 'bg-[#c8392b] text-white border-[#c8392b]'
-                    : 'bg-white dark:bg-[#1c1916] text-[#4a443f] dark:text-[#b8b0a5] border-[#141210]/15 dark:border-white/10 hover:border-[#141210]'
+                    ? 'bg-[#C8392B] text-white border-[#C8392B]'
+                    : 'bg-white dark:bg-[#181614] text-[#57524C] dark:text-[#B5AEA4] border-[#161412]/15 dark:border-white/15 hover:text-[#161412] dark:hover:text-white'
                 }`}
               >
-                <Flame className={`w-3.5 h-3.5 ${onlySpicy ? 'text-white' : 'text-[#c8392b]'}`} />
-                <span>Spicy Only</span>
+                {onlySpicy ? 'Showing Spicy Only' : 'Filter: Spicy'}
               </button>
             </div>
           </div>
 
-          {/* Category Filter Chips */}
-          <div className="relative mb-6 sm:mb-8 pb-1">
-            <div className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1">
+          {/* Interactive Segmented Category Filter Bar */}
+          <div className="mb-8 overflow-x-auto no-scrollbar">
+            <div
+              role="tablist"
+              aria-label="Menu Categories"
+              className="inline-flex items-center gap-1 p-1.5 bg-[#161412]/5 dark:bg-white/5 rounded-2xl min-w-max"
+            >
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeCategory === cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 ${
+                  className={`min-h-[40px] px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap shrink-0 ${
                     activeCategory === cat
-                      ? 'bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] shadow-md scale-105'
-                      : 'bg-white dark:bg-[#1c1916] text-[#141210] dark:text-white border border-[#141210]/15 dark:border-white/10 hover:border-[#141210]'
+                      ? 'bg-white dark:bg-[#262320] text-[#161412] dark:text-white shadow-sm'
+                      : 'text-[#57524C] dark:text-[#B5AEA4] hover:text-[#161412] dark:hover:text-white'
                   }`}
                 >
-                  {cat === 'Deals' && '🔥 '}
                   {cat}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Results Count Banner */}
-          <div className="flex items-center justify-between text-xs text-[#4a443f] dark:text-[#b8b0a5] mb-5 px-1">
-            <span>
-              Showing <strong>{filteredProducts.length}</strong> item{filteredProducts.length !== 1 ? 's' : ''}
-              {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
-            </span>
+          {/* Unboxed Results Count & Direct WhatsApp Assist */}
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#57524C] dark:text-[#B5AEA4] mb-6">
+            <div>
+              <span>Showing </span>
+              <strong className="font-mono-num text-[#161412] dark:text-white">
+                {filteredProducts.length}
+              </strong>
+              <span> item{filteredProducts.length !== 1 ? 's' : ''}</span>
+              {activeCategory !== 'All' && <span> · {activeCategory}</span>}
+            </div>
+
             <button
+              type="button"
               onClick={() => setIsWhatsAppWidgetOpen(true)}
-              className="text-[#128C7E] dark:text-[#25D366] font-semibold hover:underline flex items-center gap-1"
+              className="font-semibold text-[#161412] dark:text-[#25D366] hover:underline inline-flex items-center gap-1.5"
             >
-              <MessageCircle className="w-3.5 h-3.5" /> Direct WhatsApp ({whatsAppConfig.displayPhone})
+              <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
+              <span>Custom order? Chat on WhatsApp ({whatsAppConfig.displayPhone})</span>
             </button>
           </div>
 
-          {/* Product Grid */}
+          {/* 3-Column Product Collection Grid (Desktop) / 2-Column (Tablet) */}
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {filteredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -352,21 +348,21 @@ export default function App() {
               ))}
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#1c1916] rounded-3xl p-8 sm:p-12 text-center border border-[#141210]/10 dark:border-white/10 max-w-md mx-auto space-y-3">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#f6f1e9] dark:bg-white/10 flex items-center justify-center mx-auto text-2xl sm:text-3xl">
-                🔍
-              </div>
-              <h3 className="font-display font-black text-xl text-[#141210] dark:text-white">No items found</h3>
-              <p className="text-xs text-[#4a443f] dark:text-[#b8b0a5]">
-                Try changing your search keyword or switching categories.
+            <div className="bg-white dark:bg-[#181614] rounded-2xl p-10 text-center border border-[#161412]/10 dark:border-white/10 max-w-md mx-auto space-y-3">
+              <h3 className="font-display font-bold text-lg text-[#161412] dark:text-[#F4F1EA]">
+                No matching menu items
+              </h3>
+              <p className="text-xs sm:text-sm text-[#57524C] dark:text-[#B5AEA4]">
+                Reset your filters to view all smash burgers, wraps, wings, and loaded fries.
               </p>
               <button
+                type="button"
                 onClick={() => {
                   setActiveCategory('All');
                   setSearchQuery('');
                   setOnlySpicy(false);
                 }}
-                className="mt-2 py-2 px-5 rounded-full bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] text-xs font-bold hover:bg-black transition-colors"
+                className="min-h-[44px] px-5 rounded-xl bg-[#161412] dark:bg-[#F2B134] text-[#F7F5F0] dark:text-[#161412] text-xs font-bold"
               >
                 Reset Filters
               </button>
@@ -375,10 +371,10 @@ export default function App() {
         </div>
       </section>
 
-      {/* Loyalty FryPoints Section */}
+      {/* FryPoints Loyalty Section */}
       <LoyaltySection currentPoints={currentFryPoints} />
 
-      {/* Story & Visit Lahore Section */}
+      {/* Kitchen Story & Lahore Branch Info */}
       <StoryAndVisit
         whatsAppConfig={whatsAppConfig}
         onOpenWhatsAppWidget={() => setIsWhatsAppWidgetOpen(true)}
@@ -391,7 +387,7 @@ export default function App() {
         onOpenConfigModal={() => setIsConfigModalOpen(true)}
       />
 
-      {/* Mobile Sticky Bottom Navigation (App-like thumb experience) */}
+      {/* Context-Aware Mobile Sticky Bag Bar */}
       <MobileBottomNav
         cartItems={cartItems}
         onOpenCart={() => setIsCartOpen(true)}
@@ -399,7 +395,7 @@ export default function App() {
         whatsAppConfig={whatsAppConfig}
       />
 
-      {/* Floating WhatsApp Live Chat & Order Concierge */}
+      {/* Floating WhatsApp Direct Concierge */}
       <WhatsAppFloatingWidget
         isOpen={isWhatsAppWidgetOpen}
         onToggle={() => setIsWhatsAppWidgetOpen(!isWhatsAppWidgetOpen)}
@@ -412,7 +408,7 @@ export default function App() {
         }}
       />
 
-      {/* Cart Modal */}
+      {/* Cart Drawer / Modal */}
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -422,7 +418,7 @@ export default function App() {
         onClearCart={handleClearCart}
         whatsAppConfig={whatsAppConfig}
         onOrderSuccess={(orderId) => {
-          setToastMessage(`Order #${orderId} submitted! Check your WhatsApp.`);
+          setToastMessage(`Order #${orderId} confirmed`);
         }}
       />
 
@@ -434,7 +430,7 @@ export default function App() {
         whatsAppConfig={whatsAppConfig}
       />
 
-      {/* WhatsApp Configuration Modal */}
+      {/* WhatsApp Store Number Settings Modal */}
       <WhatsAppConfigModal
         isOpen={isConfigModalOpen}
         onClose={() => setIsConfigModalOpen(false)}
@@ -442,7 +438,7 @@ export default function App() {
         onSave={handleSaveConfig}
       />
 
-      {/* Toast Notification */}
+      {/* Action Feedback Toast */}
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
     </div>
   );

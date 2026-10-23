@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, MessageCircle, Bike, Store, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, Trash2, Plus, Minus, MessageCircle, Bike, Store, CheckCircle2 } from 'lucide-react';
 import { CartItem, CustomerDetails, OrderType, WhatsAppConfig } from '../types';
 import { formatPKR, generateWhatsAppOrderUrl, validatePakistanPhone } from '../utils/whatsapp';
 
@@ -24,8 +24,7 @@ export const CartModal: React.FC<CartModalProps> = ({
   whatsAppConfig,
   onOrderSuccess
 }) => {
-  if (!isOpen) return null;
-
+  // All hooks declared unconditionally before early return (Fixes React Rules of Hooks bug)
   const [orderType, setOrderType] = useState<OrderType>('delivery');
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -34,7 +33,8 @@ export const CartModal: React.FC<CartModalProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [completedOrder, setCompletedOrder] = useState<{ id: string; total: number } | null>(null);
 
-  // Subtotal calculation
+  if (!isOpen) return null;
+
   const subtotal = cartItems.reduce((sum, item) => {
     let itemPrice = item.product.price;
     if (item.extraCheese) itemPrice += 80;
@@ -42,7 +42,6 @@ export const CartModal: React.FC<CartModalProps> = ({
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  // Free delivery over 1500 PKR, else 100 PKR delivery in Lahore
   const deliveryFee = orderType === 'delivery' ? (subtotal >= 1500 || subtotal === 0 ? 0 : 100) : 0;
   const grandTotal = subtotal + deliveryFee;
   const fryPointsEarned = Math.floor(grandTotal / 100);
@@ -53,15 +52,15 @@ export const CartModal: React.FC<CartModalProps> = ({
       return false;
     }
     if (!customerName.trim()) {
-      setErrorMsg('Please enter your name.');
+      setErrorMsg('Please enter your full name.');
       return false;
     }
     if (!validatePakistanPhone(customerPhone.trim())) {
-      setErrorMsg('Please enter a valid mobile number (e.g. 0326 1180202).');
+      setErrorMsg('Enter a valid mobile number (e.g. 0326 1180202).');
       return false;
     }
     if (orderType === 'delivery' && !deliveryAddress.trim()) {
-      setErrorMsg('Please provide your complete delivery address in Lahore.');
+      setErrorMsg('Please provide your delivery address in Lahore.');
       return false;
     }
     setErrorMsg('');
@@ -88,7 +87,6 @@ export const CartModal: React.FC<CartModalProps> = ({
       whatsAppConfig.phoneNumber
     );
 
-    // Open WhatsApp
     window.open(waUrl, '_blank', 'noopener,noreferrer');
 
     const orderId = `FRY-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -110,94 +108,103 @@ export const CartModal: React.FC<CartModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="cart-modal-title"
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/65 backdrop-blur-sm"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#f6f1e9] dark:bg-[#1c1916] w-full max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#141210]/15 dark:border-white/10 max-h-[92vh] sm:max-h-[90vh] flex flex-col"
+        className="bg-[#F7F5F0] dark:bg-[#181614] w-full max-w-lg rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl border border-[#161412]/10 dark:border-white/10 max-h-[92vh] flex flex-col"
       >
+        {/* Mobile Drag Handle */}
+        <div className="sm:hidden pt-2.5 pb-1 bg-white dark:bg-[#141210]">
+          <div className="w-10 h-1.5 bg-[#161412]/20 dark:bg-white/20 rounded-full mx-auto" />
+        </div>
+
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-white dark:bg-[#141210] border-b border-[#141210]/10 dark:border-white/10 flex items-center justify-between">
+        <div className="px-5 py-4 bg-white dark:bg-[#141210] border-b border-[#161412]/10 dark:border-white/10 flex items-center justify-between">
           <div>
-            <h3 className="font-display font-black text-xl sm:text-2xl text-[#141210] dark:text-white">Your Order Bag</h3>
-            <p className="text-[11px] sm:text-xs text-[#4a443f] dark:text-[#b8b0a5]">
-              Freshly cooked & dispatched in Lahore • WhatsApp: <span className="text-[#25D366] font-bold">{whatsAppConfig.displayPhone}</span>
+            <h3 id="cart-modal-title" className="font-display font-bold text-xl text-[#161412] dark:text-[#F4F1EA]">
+              Your Order Bag
+            </h3>
+            <p className="text-xs text-[#57524C] dark:text-[#B5AEA4]">
+              Direct Kitchen Dispatch · {whatsAppConfig.displayPhone}
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            aria-label="Close cart modal"
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#f6f1e9] dark:bg-white/10 text-[#141210] dark:text-white flex items-center justify-center hover:bg-[#141210] hover:text-white transition-colors"
+            aria-label="Close bag"
+            className="min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-[#161412] dark:text-[#F4F1EA] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Success View */}
+        {/* Post-Order Confirmation State */}
         {completedOrder ? (
           <div className="p-6 sm:p-8 text-center space-y-4 my-auto">
-            <div className="w-16 h-16 rounded-full bg-[#25D366]/20 text-[#128C7E] flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-10 h-10 text-[#25D366]" />
+            <div className="w-14 h-14 rounded-full bg-[#25D366]/15 text-[#25D366] flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="font-display font-black text-2xl text-[#141210] dark:text-white">
-              Order Placed Successfully!
-            </h3>
-            <p className="text-xs sm:text-sm text-[#4a443f] dark:text-[#b8b0a5] max-w-sm mx-auto">
-              Order ID: <span className="font-bold text-[#141210] dark:text-white">#{completedOrder.id}</span>
+            <h4 className="font-display font-bold text-2xl text-[#161412] dark:text-[#F4F1EA]">
+              Order #{completedOrder.id} Confirmed
+            </h4>
+            <p className="text-sm text-[#57524C] dark:text-[#B5AEA4] max-w-sm mx-auto">
+              Total Payable: <strong className="font-mono-num text-[#161412] dark:text-white">{formatPKR(completedOrder.total)}</strong>
               <br />
-              Total: <span className="font-bold text-[#c8392b] dark:text-[#f2b134]">{formatPKR(completedOrder.total)}</span>
-              <br />
-              Our kitchen has received your order and is firing up the grill!
+              Our Gulberg kitchen is preparing your fresh order now.
             </p>
 
-            <div className="pt-2 flex flex-col gap-2 max-w-xs mx-auto">
+            <div className="pt-2 flex flex-col gap-2.5 max-w-xs mx-auto">
               <button
+                type="button"
                 onClick={() => {
                   const url = `https://wa.me/${whatsAppConfig.phoneNumber}?text=${encodeURIComponent(
-                    `Hi Fry Days! 👋 I placed Order #${completedOrder.id}. Please confirm when rider departs.`
+                    `Hi Fry Days! I placed Order #${completedOrder.id} (${formatPKR(completedOrder.total)}). Please share live rider status.`
                   )}`;
                   window.open(url, '_blank', 'noopener,noreferrer');
                 }}
-                className="py-3 px-4 rounded-full bg-[#25D366] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#20ba59] transition-all shadow-md"
+                className="min-h-[48px] px-4 rounded-xl bg-[#25D366] text-[#11100E] font-bold text-sm inline-flex items-center justify-center gap-2 hover:bg-[#20BD5A] transition-colors"
               >
-                <MessageCircle className="w-4 h-4 fill-white" />
-                Track on WhatsApp
+                <MessageCircle className="w-4 h-4" />
+                <span>Track Order on WhatsApp</span>
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setCompletedOrder(null);
                   onClose();
                 }}
-                className="py-2.5 px-4 rounded-full border border-[#141210]/20 dark:border-white/20 text-xs font-bold text-[#141210] dark:text-white hover:bg-[#141210] hover:text-white transition-colors"
+                className="min-h-[44px] px-4 rounded-xl border border-[#161412]/15 dark:border-white/15 text-xs font-semibold text-[#161412] dark:text-[#F4F1EA]"
               >
-                Back to Menu
+                Return to Menu
               </button>
             </div>
           </div>
         ) : (
-          /* Normal Cart Body */
-          <div className="p-4 sm:p-5 overflow-y-auto space-y-4 sm:space-y-5 flex-1">
+          /* Cart Body */
+          <div className="p-5 overflow-y-auto space-y-6 flex-1">
             {cartItems.length === 0 ? (
               <div className="py-12 text-center space-y-3">
-                <div className="w-16 h-16 rounded-full bg-[#efe7da] dark:bg-white/10 flex items-center justify-center mx-auto text-2xl">
-                  🍟
-                </div>
-                <h4 className="font-display font-bold text-lg text-[#141210] dark:text-white">Your bag is hungry</h4>
-                <p className="text-xs text-[#4a443f] dark:text-[#b8b0a5] max-w-xs mx-auto">
-                  Browse our smash burgers, wings, wraps, and loaded fries to add some flavor.
+                <h4 className="font-display font-bold text-lg text-[#161412] dark:text-[#F4F1EA]">
+                  Your bag is currently empty
+                </h4>
+                <p className="text-xs sm:text-sm text-[#57524C] dark:text-[#B5AEA4] max-w-xs mx-auto">
+                  Add hand-pressed smash burgers, crispy wraps, or loaded cheese fries from the menu.
                 </p>
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="mt-2 py-2 px-5 rounded-full bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] text-xs font-bold hover:bg-black"
+                  className="mt-2 min-h-[44px] px-5 rounded-xl bg-[#161412] dark:bg-[#F2B134] text-[#F7F5F0] dark:text-[#161412] text-xs font-bold"
                 >
-                  Explore Menu
+                  Browse Menu
                 </button>
               </div>
             ) : (
               <>
-                {/* Cart Items List */}
-                <div className="space-y-2.5">
+                {/* Itemized List with Hairline Dividers (No Nested Cards) */}
+                <div className="divide-y divide-[#161412]/10 dark:divide-white/10">
                   {cartItems.map((item) => {
                     let itemUnit = item.product.price;
                     if (item.extraCheese) itemUnit += 80;
@@ -207,58 +214,67 @@ export const CartModal: React.FC<CartModalProps> = ({
                     return (
                       <div
                         key={item.id}
-                        className="bg-white dark:bg-[#141210] p-3 sm:p-3.5 rounded-2xl border border-[#141210]/10 dark:border-white/10 flex items-center justify-between gap-3 shadow-2xs"
+                        className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3"
                       >
-                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0">
                           <img
                             src={item.product.img}
                             alt={item.product.name}
-                            className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover shrink-0 bg-[#efe7da]"
+                            referrerPolicy="no-referrer"
+                            className="w-14 h-14 rounded-xl object-cover shrink-0 bg-[#1C1916]"
                           />
                           <div className="min-w-0">
-                            <h4 className="font-bold text-xs sm:text-sm text-[#141210] dark:text-white truncate">
+                            <h4 className="font-semibold text-sm text-[#161412] dark:text-[#F4F1EA] truncate">
                               {item.product.name}
                             </h4>
-                            <div className="text-[10px] sm:text-[11px] text-[#4a443f] dark:text-[#b8b0a5]">
-                              {formatPKR(itemUnit)} each
+                            <div className="text-xs text-[#57524C] dark:text-[#B5AEA4]">
+                              <span className="font-mono-num">{formatPKR(itemUnit)}</span> each
                               {(item.extraCheese || item.extraJalapeno || (item.spiceLevel && item.spiceLevel !== 'Regular')) && (
-                                <span className="block text-[10px] text-[#c8392b] dark:text-[#f2b134]">
+                                <span className="block text-[11px] text-[#C8392B] dark:text-[#F2B134]">
                                   {[
-                                    item.extraCheese && '+Cheese',
+                                    item.extraCheese && '+Cheddar',
                                     item.extraJalapeno && '+Jalapeños',
                                     item.spiceLevel !== 'Regular' && item.spiceLevel
                                   ]
                                     .filter(Boolean)
-                                    .join(' • ')}
+                                    .join(' · ')}
                                 </span>
                               )}
                             </div>
-                            <span className="font-display font-black text-xs text-[#141210] dark:text-white">
+                            <span className="font-mono-num font-bold text-xs text-[#161412] dark:text-[#F4F1EA]">
                               {formatPKR(lineTotal)}
                             </span>
                           </div>
                         </div>
 
-                        {/* Quantity Buttons */}
+                        {/* 44px Touch Steppers */}
                         <div className="flex items-center gap-1 shrink-0">
                           <button
+                            type="button"
                             onClick={() => onUpdateQuantity(item.id, -1)}
-                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#f6f1e9] dark:bg-white/10 text-[#141210] dark:text-white flex items-center justify-center hover:bg-[#141210] hover:text-white transition-colors"
+                            aria-label="Decrease item quantity"
+                            className="min-h-[40px] min-w-[40px] rounded-xl bg-white dark:bg-[#221F1C] border border-[#161412]/10 dark:border-white/10 text-[#161412] dark:text-white flex items-center justify-center"
                           >
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-3.5 h-3.5" />
                           </button>
-                          <span className="w-5 text-center text-xs font-bold text-[#141210] dark:text-white">{item.quantity}</span>
+                          <span className="w-6 text-center font-mono-num text-xs font-bold text-[#161412] dark:text-white">
+                            {item.quantity}
+                          </span>
                           <button
+                            type="button"
                             onClick={() => onUpdateQuantity(item.id, 1)}
-                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#f6f1e9] dark:bg-white/10 text-[#141210] dark:text-white flex items-center justify-center hover:bg-[#141210] hover:text-white transition-colors"
+                            aria-label="Increase item quantity"
+                            className="min-h-[40px] min-w-[40px] rounded-xl bg-white dark:bg-[#221F1C] border border-[#161412]/10 dark:border-white/10 text-[#161412] dark:text-white flex items-center justify-center"
                           >
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-3.5 h-3.5" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => onRemoveItem(item.id)}
-                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-950 flex items-center justify-center transition-colors ml-0.5"
+                            aria-label="Remove item"
+                            className="min-h-[40px] min-w-[40px] rounded-xl text-[#C8392B] hover:bg-red-500/10 flex items-center justify-center"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -266,131 +282,126 @@ export const CartModal: React.FC<CartModalProps> = ({
                   })}
                 </div>
 
-                {/* Order Type Selector */}
-                <div className="space-y-1">
-                  <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#141210] dark:text-white block">
-                    Choose Delivery or Pickup
+                {/* Segmented Order Mode Control */}
+                <div className="pt-4 border-t border-[#161412]/10 dark:border-white/10 space-y-2">
+                  <label className="text-xs font-semibold text-[#161412] dark:text-[#F4F1EA] block">
+                    Fulfillment Method
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-[#161412]/5 dark:bg-white/5 rounded-xl">
                     <button
                       type="button"
                       onClick={() => setOrderType('delivery')}
-                      className={`p-2.5 sm:p-3 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                      className={`min-h-[44px] px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors ${
                         orderType === 'delivery'
-                          ? 'bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] border-[#141210] dark:border-white shadow-sm'
-                          : 'bg-white dark:bg-white/5 text-[#4a443f] dark:text-[#b8b0a5] border-[#141210]/15 dark:border-white/10'
+                          ? 'bg-white dark:bg-[#262320] text-[#161412] dark:text-white shadow-sm'
+                          : 'text-[#57524C] dark:text-[#B5AEA4]'
                       }`}
                     >
-                      <Bike className="w-4 h-4 text-[#f2b134]" />
+                      <Bike className="w-4 h-4" />
                       <span>Home Delivery</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setOrderType('pickup')}
-                      className={`p-2.5 sm:p-3 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                      className={`min-h-[44px] px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors ${
                         orderType === 'pickup'
-                          ? 'bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] border-[#141210] dark:border-white shadow-sm'
-                          : 'bg-white dark:bg-white/5 text-[#4a443f] dark:text-[#b8b0a5] border-[#141210]/15 dark:border-white/10'
+                          ? 'bg-white dark:bg-[#262320] text-[#161412] dark:text-white shadow-sm'
+                          : 'text-[#57524C] dark:text-[#B5AEA4]'
                       }`}
                     >
-                      <Store className="w-4 h-4 text-[#f2b134]" />
-                      <span>Takeaway Pickup</span>
+                      <Store className="w-4 h-4" />
+                      <span>Self Pickup</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Customer Details Form */}
-                <div className="space-y-2.5 bg-white dark:bg-[#141210] p-3.5 sm:p-4 rounded-2xl border border-[#141210]/10 dark:border-white/10">
-                  <h4 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#141210] dark:text-white">
-                    Customer & Delivery Info
-                  </h4>
-
+                {/* Customer Verification Fields */}
+                <div className="pt-4 border-t border-[#161412]/10 dark:border-white/10 space-y-3">
                   <div>
-                    <label className="block text-[10px] sm:text-[11px] font-semibold text-[#4a443f] dark:text-[#b8b0a5] mb-1">
-                      Your Full Name *
+                    <label className="block text-xs font-medium text-[#57524C] dark:text-[#B5AEA4] mb-1">
+                      Full Name *
                     </label>
                     <input
                       type="text"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="e.g. Rehan Gujjar"
-                      className="w-full text-sm p-2.5 rounded-xl border border-[#141210]/15 dark:border-white/10 bg-[#f6f1e9]/30 dark:bg-white/5 text-[#141210] dark:text-white focus:outline-none focus:border-[#141210] dark:focus:border-[#f2b134]"
+                      placeholder="Rehan Gujjar"
+                      className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-[#161412]/15 dark:border-white/15 bg-white dark:bg-[#221F1C] text-[#161412] dark:text-white focus:outline-none focus:border-[#161412] dark:focus:border-[#F2B134]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] sm:text-[11px] font-semibold text-[#4a443f] dark:text-[#b8b0a5] mb-1">
-                      WhatsApp Phone Number (03xx xxxxxxx) *
+                    <label className="block text-xs font-medium text-[#57524C] dark:text-[#B5AEA4] mb-1">
+                      Mobile / WhatsApp Number (03xx xxxxxxx) *
                     </label>
                     <input
                       type="tel"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       placeholder="0326 1180202"
-                      className="w-full text-sm p-2.5 rounded-xl border border-[#141210]/15 dark:border-white/10 bg-[#f6f1e9]/30 dark:bg-white/5 text-[#141210] dark:text-white focus:outline-none focus:border-[#141210] dark:focus:border-[#f2b134]"
+                      className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-[#161412]/15 dark:border-white/15 bg-white dark:bg-[#221F1C] text-[#161412] dark:text-white focus:outline-none focus:border-[#161412] dark:focus:border-[#F2B134]"
                     />
                   </div>
 
                   {orderType === 'delivery' && (
                     <div>
-                      <label className="block text-[10px] sm:text-[11px] font-semibold text-[#4a443f] dark:text-[#b8b0a5] mb-1">
-                        Delivery Address in Lahore *
+                      <label className="block text-xs font-medium text-[#57524C] dark:text-[#B5AEA4] mb-1">
+                        Complete Delivery Address in Lahore *
                       </label>
                       <textarea
                         rows={2}
                         value={deliveryAddress}
                         onChange={(e) => setDeliveryAddress(e.target.value)}
-                        placeholder="House #, Street, Phase / Block, Area (e.g. Gulberg, DHA, Johar Town)"
-                        className="w-full text-sm p-2.5 rounded-xl border border-[#141210]/15 dark:border-white/10 bg-[#f6f1e9]/30 dark:bg-white/5 text-[#141210] dark:text-white focus:outline-none focus:border-[#141210] dark:focus:border-[#f2b134]"
+                        placeholder="House #, Street, Block / Phase (Gulberg, DHA, Model Town, Johar Town)"
+                        className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-[#161412]/15 dark:border-white/15 bg-white dark:bg-[#221F1C] text-[#161412] dark:text-white focus:outline-none focus:border-[#161412] dark:focus:border-[#F2B134]"
                       />
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-[10px] sm:text-[11px] font-semibold text-[#4a443f] dark:text-[#b8b0a5] mb-1">
-                      Special Order Note (Optional)
+                    <label className="block text-xs font-medium text-[#57524C] dark:text-[#B5AEA4] mb-1">
+                      Kitchen / Rider Instructions (Optional)
                     </label>
                     <input
                       type="text"
                       value={orderNotes}
                       onChange={(e) => setOrderNotes(e.target.value)}
-                      placeholder="e.g. Extra garlic mayo, call on arrival"
-                      className="w-full text-sm p-2.5 rounded-xl border border-[#141210]/15 dark:border-white/10 bg-[#f6f1e9]/30 dark:bg-white/5 text-[#141210] dark:text-white focus:outline-none focus:border-[#141210] dark:focus:border-[#f2b134]"
+                      placeholder="Extra garlic mayo, ring bell on arrival..."
+                      className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-[#161412]/15 dark:border-white/15 bg-white dark:bg-[#221F1C] text-[#161412] dark:text-white focus:outline-none focus:border-[#161412] dark:focus:border-[#F2B134]"
                     />
                   </div>
                 </div>
 
-                {/* Error Banner */}
                 {errorMsg && (
-                  <div className="bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 text-xs font-semibold p-2.5 rounded-xl border border-red-200 dark:border-red-900 text-center">
+                  <div role="alert" className="text-xs font-semibold text-[#C8392B] dark:text-[#FF6B6B]">
                     {errorMsg}
                   </div>
                 )}
 
-                {/* Pricing Breakdown & Rewards */}
-                <div className="bg-white dark:bg-[#141210] p-3.5 sm:p-4 rounded-2xl border border-[#141210]/10 dark:border-white/10 space-y-2 text-xs">
-                  <div className="flex justify-between text-[#4a443f] dark:text-[#b8b0a5]">
+                {/* Tabular Summary */}
+                <div className="pt-4 border-t border-[#161412]/10 dark:border-white/10 space-y-1.5 text-xs">
+                  <div className="flex justify-between text-[#57524C] dark:text-[#B5AEA4]">
                     <span>Items Subtotal</span>
-                    <span className="text-[#141210] dark:text-white font-medium">{formatPKR(subtotal)}</span>
+                    <span className="font-mono-num text-[#161412] dark:text-white">{formatPKR(subtotal)}</span>
                   </div>
 
                   {orderType === 'delivery' && (
-                    <div className="flex justify-between text-[#4a443f] dark:text-[#b8b0a5]">
-                      <span>Lahore Delivery</span>
-                      <span>{deliveryFee === 0 ? <strong className="text-[#2f5d3a] dark:text-[#25D366]">FREE</strong> : formatPKR(deliveryFee)}</span>
+                    <div className="flex justify-between text-[#57524C] dark:text-[#B5AEA4]">
+                      <span>Lahore Delivery (Free over Rs. 1,500)</span>
+                      <span className="font-mono-num text-[#161412] dark:text-white">
+                        {deliveryFee === 0 ? 'Free' : formatPKR(deliveryFee)}
+                      </span>
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-[#141210]/10 dark:border-white/10 flex justify-between font-display font-black text-base text-[#141210] dark:text-white">
-                    <span>Total Amount</span>
-                    <span className="text-[#c8392b] dark:text-[#f2b134]">{formatPKR(grandTotal)}</span>
+                  <div className="flex justify-between text-[#57524C] dark:text-[#B5AEA4]">
+                    <span>FryPoints Earned</span>
+                    <span className="font-mono-num text-[#161412] dark:text-[#F2B134]">+{fryPointsEarned} pts</span>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-[#e08e1b] dark:text-[#f2b134] font-bold bg-[#f2b134]/15 dark:bg-[#f2b134]/10 px-3 py-1.5 rounded-lg">
-                    <span className="flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5" /> FryPoints Earned
-                    </span>
-                    <span>+{fryPointsEarned} pts</span>
+                  <div className="pt-2 border-t border-[#161412]/10 dark:border-white/10 flex justify-between font-display font-bold text-base text-[#161412] dark:text-white">
+                    <span>Total Payable (COD)</span>
+                    <span className="font-mono-num text-[#C8392B] dark:text-[#F2B134]">{formatPKR(grandTotal)}</span>
                   </div>
                 </div>
               </>
@@ -398,22 +409,24 @@ export const CartModal: React.FC<CartModalProps> = ({
           </div>
         )}
 
-        {/* Footer Checkout Buttons */}
+        {/* Sticky Checkout Actions */}
         {!completedOrder && cartItems.length > 0 && (
-          <div className="p-3.5 sm:p-4 bg-white dark:bg-[#141210] border-t border-[#141210]/10 dark:border-white/10 space-y-2">
+          <div className="p-4 bg-white dark:bg-[#141210] border-t border-[#161412]/10 dark:border-white/10 space-y-2">
             <button
+              type="button"
               onClick={handleOrderViaWhatsApp}
-              className="w-full py-3 sm:py-3.5 px-4 rounded-full bg-[#25D366] text-white font-display font-black text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-[#20ba59] transition-all shadow-lg shadow-[#25D366]/25 active:scale-95"
+              className="w-full min-h-[48px] px-4 rounded-xl bg-[#25D366] text-[#11100E] font-bold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-[#20BD5A] active:scale-[0.99] transition-all whitespace-nowrap"
             >
-              <MessageCircle className="w-5 h-5 fill-white" />
-              <span>Send Order to WhatsApp ({formatPKR(grandTotal)})</span>
+              <MessageCircle className="w-5 h-5 shrink-0" />
+              <span>Send Order on WhatsApp · {formatPKR(grandTotal)}</span>
             </button>
 
             <button
+              type="button"
               onClick={handleCashOnDelivery}
-              className="w-full py-2.5 px-4 rounded-full bg-[#141210] dark:bg-white text-[#f6f1e9] dark:text-[#141210] font-bold text-xs hover:bg-black dark:hover:bg-gray-100 transition-colors"
+              className="w-full min-h-[44px] px-4 rounded-xl bg-[#161412] dark:bg-[#262320] text-[#F7F5F0] font-semibold text-xs hover:opacity-90 transition-opacity whitespace-nowrap"
             >
-              Or Place with Cash on Delivery
+              Confirm Cash on Delivery Order
             </button>
           </div>
         )}
